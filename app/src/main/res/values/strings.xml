@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">SrirGacha</string>
+    <string-array name="default_gachas">
+        <item>Genshin Impact</item>
+        <item>Raid: Shadow Legends</item>
+        <item>Battle Cats</item>
+    </string-array>
 </resources>
