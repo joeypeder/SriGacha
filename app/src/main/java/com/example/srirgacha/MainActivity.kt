@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.*
 import com.example.srirgacha.service.GoldService
+import com.example.srirgacha.service.MathService
 import com.example.srirgacha.service.dto.Metals
 import retrofit2.Call
 import retrofit2.Callback
@@ -29,20 +30,9 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        etChance = findViewById(R.id.et_chance)
-        etCost = findViewById(R.id.et_cost)
-        btCalculate = findViewById(R.id.bt_calculate)
-        tvOutput = findViewById(R.id.tv_output)
-        btBackup = findViewById(R.id.bt_backup)
-        tvBackup = findViewById(R.id.tv_backup)
-        spDefaults = findViewById(R.id.sp_defaults)
+        bindViews()
 
-        btCalculate.setOnClickListener(){
-            tvOutput.text = CalculateOdds(etChance.text.toString().toDouble(), etCost.text.toString().toDouble());
-        }
-        btBackup.setOnClickListener(){
-            tvBackup.text = tvOutput.text.toString()
-        }
+        setOnClicks()
 
         //fill spinner with strings.xml data
         ArrayAdapter.createFromResource(
@@ -67,11 +57,23 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    //TODO("move math to MathService")
-    fun CalculateOdds(calc: Double, cost: Double): String {
-        var compliment = (100 - calc) / 100
-        return "50%: $" + round(log(0.5, compliment) * cost) + "\n90%: $" + round(log(0.1, compliment) * cost) + "\n99%: $" + round(
-            log(0.01, compliment) * cost)
+    private fun bindViews(){
+        etChance = findViewById(R.id.et_chance)
+        etCost = findViewById(R.id.et_cost)
+        btCalculate = findViewById(R.id.bt_calculate)
+        tvOutput = findViewById(R.id.tv_output)
+        btBackup = findViewById(R.id.bt_backup)
+        tvBackup = findViewById(R.id.tv_backup)
+        spDefaults = findViewById(R.id.sp_defaults)
+    }
+
+    private fun setOnClicks(){
+        btCalculate.setOnClickListener(){
+            tvOutput.text = MathService.CalculateOdds(etChance.text.toString().toDouble(), etCost.text.toString().toDouble());
+        }
+        btBackup.setOnClickListener(){
+            tvBackup.text = tvOutput.text.toString()
+        }
     }
 
     private fun buildService(): GoldService{
