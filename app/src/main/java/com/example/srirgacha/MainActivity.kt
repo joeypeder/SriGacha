@@ -1,19 +1,13 @@
 package com.example.srirgacha
 
+import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.*
 import com.example.srirgacha.service.GoldService
 import com.example.srirgacha.service.MathService
-import com.example.srirgacha.service.dto.Metals
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
-import kotlin.math.log
-import kotlin.math.round
 
 //https://api.metals.live/
 
@@ -26,6 +20,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var tvBackup: TextView
     lateinit var spDefaults: Spinner
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -33,6 +28,8 @@ class MainActivity : AppCompatActivity() {
         bindViews()
 
         setOnClicks()
+
+        setSpinnerSelect()
 
         //fill spinner with strings.xml data
         ArrayAdapter.createFromResource(
@@ -44,16 +41,7 @@ class MainActivity : AppCompatActivity() {
             spDefaults.adapter = adapter
         }
 
-        val mathService = buildService()
-        mathService.getMetal().enqueue(object : Callback<Metals> {
-            override fun onResponse(call: Call<Metals>, response: Response<Metals>) {
-                Log.i("asdf", "onResponse()")
-
-            }
-            override fun onFailure(call: Call<Metals>, t: Throwable){
-                Log.i("asdf", "GoldAPI call failed")
-            }
-        })
+        val metalService = GoldService()
 
     }
 
@@ -71,18 +59,33 @@ class MainActivity : AppCompatActivity() {
         btCalculate.setOnClickListener(){
             tvOutput.text = MathService.CalculateOdds(etChance.text.toString().toDouble(), etCost.text.toString().toDouble());
         }
+
         btBackup.setOnClickListener(){
+            val namesPref = getSharedPreferences(getString(R.string.app_name), Context.MODE_PRIVATE)
+            with(namesPref.edit()){
+                putString("odds", etChance.text.toString())
+                putString("cost", etCost.text.toString())
+                commit()
+            }
             tvBackup.text = tvOutput.text.toString()
+
         }
     }
 
-    private fun buildService(): GoldService{
-        val retrofit = Retrofit.Builder()
-            .baseUrl("https://api.metals.live/v1/")
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
+    private fun setSpinnerSelect(){
+        spDefaults.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+                Log.i("asdf", "Nothing selected on spinner")
+            }
 
-        return retrofit.create(GoldService::class.java)
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                if(position == 0){
+                    val namesPref = getSharedPreferences(getString(R.string.app_name), Context.MODE_PRIVATE)
+                    etChance.setText(namesPref.getString("odds", "0"))
+                    etCost.setText(namesPref.getString("cost", "0"))
+                }
+            }
+        }
     }
 
 
