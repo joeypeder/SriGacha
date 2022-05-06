@@ -79,10 +79,27 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                if(position == 0){
-                    val namesPref = getSharedPreferences(getString(R.string.app_name), Context.MODE_PRIVATE)
-                    etChance.setText(namesPref.getString("odds", "0"))
-                    etCost.setText(namesPref.getString("cost", "0"))
+                when(position){
+                    0 -> {
+                        val namesPref = getSharedPreferences(getString(R.string.app_name), Context.MODE_PRIVATE)
+                        etChance.setText(namesPref.getString("odds", "0"))
+                        etCost.setText(namesPref.getString("cost", "0"))
+                    }
+                    1 -> {//Genshin Impact
+                        etChance.setText("0.6")
+                        etCost.setText("2.50")
+                    }
+                    2 -> {//Raid: Shadow Legends
+                        etChance.setText("0.5")
+                        etCost.setText("3.20")
+                    }
+                    3 -> {//Battle Cats
+                        etChance.setText("5")
+                        etCost.setText("5.00")
+                    }
+                    //If I had more time I would move these to an array of data classes
+                    //that use the String + chance/cost doubles, but this switch case
+                    //works for a basic demo
                 }
             }
         }
